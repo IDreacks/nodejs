@@ -75,29 +75,32 @@ app.post("/addarticle", (req, res) => {
 
     res.send("toto")
 })
-app.post("/login", (req, res) =>
-    async function checkPassword() {
+app.post("/login", async (req, res) => {
 
-        let email = req.body.email
-        let password = req.body.password
-        // // htmlspecialchars
 
-        const user = await prisma.user.findUnique({
-            where: {
-                email: email,
-            },
-        })
-        bcrypt.compare(password, user.password, function (err, result) {
-            if (req.body.password != user.password) {
-                return err("le mot de passe est erroné")
-            }
-            else {
 
-            }
-        });
+    let email = req.body.email
+    let password = req.body.password
+    // // htmlspecialchars
+
+    const user = await prisma.users.findUnique({
+        where: {
+            email: email,
+        },
     })
+    bcrypt.compare(password, user.password, function (err, result) {
+        if (result === true) {
+            res.send(JSON.stringify({ user: user.name, userId: user.id, userEmail: user.email, userRole: user.role }))
+        }
+        else {
+            console.log(err);
+            res.send(JSON.stringify({ erreur: "mauvais mot de passe" }))
+        }
+    });
 
+    // res.send({})
 
+})
 
 app.post("/inscription", (req, res) => {
 
